@@ -16,8 +16,8 @@ export default class CreateNote extends Component {
     }
 
     async componentDidMount() {
+        console.log(this.props.match.params.id);
         this.getUsers();
-
     }
 
     getUsers = async () => {

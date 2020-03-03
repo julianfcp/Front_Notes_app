@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios';
 import { format } from 'timeago.js';
+import { Link } from 'react-router-dom';
 
 export default class NotesList extends Component {
     constructor(props) {
@@ -10,7 +11,7 @@ export default class NotesList extends Component {
         }
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         this.getNotes();
     }
 
@@ -21,6 +22,11 @@ export default class NotesList extends Component {
         console.log(this.state.notes);
     }
 
+    deleteNote = async (id) => {
+        await axios.delete('http://localhost:4000/api/notes/' + id);
+        this.getNotes();
+    }
+
 
     render() {
         return (
@@ -29,12 +35,21 @@ export default class NotesList extends Component {
                     this.state.notes.map(note =>
                         <div className="col-md-4 p-2" key={note._id}>
                             <div className="card">
-                                <h5 className="card-header">{note.title}</h5>
+                                <div className="card-header d-flex justify-content-between">
+                                    <h5>{note.title}</h5>
+                                    <Link className="btn btn-secondary" to={"/edit/" + note._id}>
+                                        Edit
+                                    </Link>
+                                </div>
                                 <div className="card-body">
                                     <p className="card-text">{note.content}</p>
                                     <p>{note.author}</p>
                                     <p>{format(note.date)}</p>
-                                    <button></button>
+                                </div>
+                                <div className="card-footer text-muted">
+                                    <button className="btn btn-danger" onClick={() => this.deleteNote(note._id)}>
+                                        Delete Note
+                                    </button>
                                 </div>
                             </div>
                         </div>)
