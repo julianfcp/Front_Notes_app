@@ -42,13 +42,13 @@ export default class NotesList extends Component {
                                     </Link>
                                 </div>
                                 <div className="card-body">
-                                    <p className="card-text">{note.content}</p>
+                                    <p className="card-text">{note.content}</p>                    
+                                </div>
+                                <div className="card-footer text-muted d-flex justify-content-between">
                                     <p>{note.author}</p>
                                     <p>{format(note.date)}</p>
-                                </div>
-                                <div className="card-footer text-muted">
                                     <button className="btn btn-danger" onClick={() => this.deleteNote(note._id)}>
-                                        Delete Note
+                                        Delete
                                     </button>
                                 </div>
                             </div>
