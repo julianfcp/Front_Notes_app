@@ -11,13 +11,35 @@ export default class CreateNote extends Component {
             userSelected: '',
             title: '',
             content: '',
-            date: new Date()
+            date: new Date(),
+            editing: false,
+            _id: ''
         }
     }
 
     async componentDidMount() {
         console.log(this.props.match.params.id);
         this.getUsers();
+
+        if(this.props.match.params.id){
+            this.getNoteValues();
+            this.setState({ 
+                editing: true,
+                _id: this.props.match.params.id
+            });
+            
+        }
+
+    }
+
+    getNoteValues = async () => {
+        const res = await axios.get('http://localhost:4000/api/notes/'+ this.props.match.params.id);
+        this.setState({
+            title: res.data.title,
+            content: res.data.content,
+            userSelected: res.data.author,
+            date: new Date(res.data.date)
+        })
     }
 
     getUsers = async () => {
@@ -35,11 +57,21 @@ export default class CreateNote extends Component {
             date: this.state.date,
             author: this.state.userSelected,
         }
-        const res = await axios.post('http://localhost:4000/api/notes', newNote);
-        console.log(res.data);
+        
+        if(this.state.editing) {
+            // voy actualizar una nota
+            await axios.put('http://localhost:4000/api/notes/'+ this.state._id, newNote)
+
+
+        }else{
+            // voy a crear una nueva nota
+            const res = await axios.post('http://localhost:4000/api/notes', newNote);
+            console.log(res.data);
+        }
         // Clear form: 
         document.getElementById("create-note-form").reset();
         this.setState({ date: new Date() });
+
     }
     // Este evento maneja (userSelected, title, content)
     onInputChange = (e) => {
@@ -65,7 +97,8 @@ export default class CreateNote extends Component {
                             <select
                                 className="form-control"
                                 name="userSelected"
-                                onChange={this.onInputChange}>
+                                onChange={this.onInputChange}
+                                value={this.state.userSelected}>
                                 {
                                     this.state.users.map(user =>
                                         <option
@@ -85,6 +118,7 @@ export default class CreateNote extends Component {
                                 placeholder="Title"
                                 name="title"
                                 onChange={this.onInputChange}
+                                value={this.state.title}
                                 required />
                         </div>
                         {/** Note Content */}
@@ -94,7 +128,7 @@ export default class CreateNote extends Component {
                                 className="form-control"
                                 placeholder="Content"
                                 onChange={this.onInputChange}
-
+                                value={this.state.content}
                                 required>
                             </textarea>
                         </div>
